@@ -1,27 +1,43 @@
 import cv2
 from pyzbar.pyzbar import decode
+import pandas as pd
+import numpy as np
 
-def get_serial_number():
-    cap = cv2.VideoCapture(0)  # Kamera pertama
-    serial_number = None
-    print("[INFO] Scanning barcode...")
+metadata = pd.read_csv("barcode_metadata.csv")
 
-    while True:
-        ret, frame = cap.read()
-        if not ret:
-            break
+def find_barcode_info(barcode_data):
+    matched = metadata[metadata['barcode_id'] == barcode_data]
+    if not matched.empty:
+        return matched.iloc[0].to_dict()
+    return None
 
-        barcodes = decode(frame)
-        for barcode in barcodes:
-            serial_number = barcode.data.decode('utf-8')
-            print("Detected Serial:", serial_number)
-            cap.release()
-            return serial_number
+cap = cv2.VideoCapture(0)
+print("🔍 Sila imbas barcode... Tekan Esc untuk keluar.")
 
-        cv2.imshow("Barcode Scanner", frame)
-        if cv2.waitKey(1) == ord("q"):
-            break
+while True:
+    ret, frame = cap.read()
+    if not ret:
+        break
 
-    cap.release()
-    cv2.destroyAllWindows()
-    return serial_number
+    for barcode in decode(frame):
+        barcode_data = barcode.data.decode('utf-8')
+        pts = np.array([barcode.polygon], np.int32)
+        cv2.polylines(frame, [pts], True, (0,255,0), 2)
+        cv2.putText(frame, barcode_data, (barcode.rect.left, barcode.rect.top - 10),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
+
+        info = find_barcode_info(barcode_data)
+        if info:
+            print("\n✅ Barcode Dijumpai:", barcode_data)
+            print("📍 Lokasi:", info['location'])
+            print("🔢 Serial:", info['serial_number'])
+            print("📝 Info:", info['description'])
+        else:
+            print("\n❌ Barcode tidak dijumpai dalam dataset:", barcode_data)
+
+    cv2.imshow("Barcode Scanner", frame)
+    if cv2.waitKey(1) & 0xFF == 27: # Esc key to exit       
+        break
+
+cap.release()
+cv2.destroyAllWindows()
