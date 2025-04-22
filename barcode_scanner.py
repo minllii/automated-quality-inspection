@@ -32,9 +32,11 @@ while True:
 
         if info:
             print("\n✅ Barcode Dijumpai:", barcode_data)
-            print("📍 Lokasi:", info['location'])
-            print("🔢 Serial:", info['serial_number'])
-            print("📝 Info:", info['description'])
+            print("📍 Logo:", info['logo'])
+            print("🔢 Model:", info['model'])
+            print("🏷️ Label:", info['countrylabel'])
+            print("⚡ Power Count:", info['power'])
+            print("🖥️ Control Panel:", info['controlpanel'])
 
             # Tulis barcode ke fail untuk Streamlit baca
             with open("current_barcode.txt", "w") as f:
