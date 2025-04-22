@@ -29,11 +29,17 @@ while True:
         print("🔍 Data dari kamera:", barcode_data)
         # Cari maklumat barcode dalam dataset
         info = find_barcode_info(barcode_data)
+
         if info:
             print("\n✅ Barcode Dijumpai:", barcode_data)
             print("📍 Lokasi:", info['location'])
             print("🔢 Serial:", info['serial_number'])
             print("📝 Info:", info['description'])
+
+            # Tulis barcode ke fail untuk Streamlit baca
+            with open("current_barcode.txt", "w") as f:
+             f.write(barcode_data)
+
         else:
             print("\n❌ Barcode tidak dijumpai dalam dataset:", barcode_data)
 
