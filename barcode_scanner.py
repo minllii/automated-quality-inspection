@@ -3,10 +3,10 @@ from pyzbar.pyzbar import decode
 import pandas as pd
 import numpy as np
 
-metadata = pd.read_csv("barcode_metadata.csv")
+metadata = pd.read_csv("barcode_metadata.csv", dtype={'barcode_id': str})
 
 def find_barcode_info(barcode_data):
-    matched = metadata[metadata['barcode_id'] == barcode_data]
+    matched = metadata[metadata['barcode_id'] .str.strip() == barcode_data.strip()]
     if not matched.empty:
         return matched.iloc[0].to_dict()
     return None

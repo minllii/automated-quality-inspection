@@ -1,5 +1,2 @@
-barcode_id,serial_number,location,description
-9780201379624,MAC124,Perlis,Unit D
-,,,
-,,,
-,,,
+barcode_id,,serial_number,location,description
+9780201379624,,MAC124,Perlis,Unit D
