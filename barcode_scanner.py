@@ -20,12 +20,14 @@ while True:
         break
 
     for barcode in decode(frame):
-        barcode_data = barcode.data.decode('utf-8')
+        barcode_data = barcode.data.decode('utf-8').strip()
         pts = np.array([barcode.polygon], np.int32)
         cv2.polylines(frame, [pts], True, (0,255,0), 2)
         cv2.putText(frame, barcode_data, (barcode.rect.left, barcode.rect.top - 10),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0,255,0), 2)
 
+        print("🔍 Data dari kamera:", barcode_data)
+        # Cari maklumat barcode dalam dataset
         info = find_barcode_info(barcode_data)
         if info:
             print("\n✅ Barcode Dijumpai:", barcode_data)
