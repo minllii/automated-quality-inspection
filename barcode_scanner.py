@@ -1,16 +1,26 @@
+from picamera2 import Picamera2
+
 import cv2
+from pyzbar import pyzbar
 import pandas as pd
+
 import numpy as np
+
 import os
 
 # Load metadata
 if not os.path.exists("barcode_metadata.csv"):
+
     raise FileNotFoundError("Missing barcode_metadata.csv")
+
+
 
 metadata = pd.read_csv("barcode_metadata.csv", dtype={'barcode_id': str})
 
 def find_barcode_info(barcode_data):
+
     matched = metadata[metadata['barcode_id'].str.strip() == barcode_data.strip()]
+
     if not matched.empty:
         return matched.iloc[0].to_dict()
     return None
@@ -22,9 +32,6 @@ print("🔍 Scanning for barcodes... Press Esc to exit.")
 barcode_detector = cv2.barcode_BarcodeDetector()
 
 while True:
-    ret, frame = cap.read()
-    if not ret:
-        break
 
     # Detect barcodes in the frame
     retval, decoded_info, points, straight_qrcode = barcode_detector.detectAndDecodeMulti(frame)
