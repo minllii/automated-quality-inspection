@@ -90,6 +90,13 @@ def start_scan():
     scanning = True
     current_barcode = None
     stable_count = 0
+
+    # Clear last scan result
+    if os.path.exists(BARCODE_FILE):
+        os.remove(BARCODE_FILE)
+    if os.path.exists(SNAPSHOT_FILE):
+        os.remove(SNAPSHOT_FILE)
+
     return "", 200
 
 @app.route("/barcode_data")
