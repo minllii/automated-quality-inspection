@@ -96,9 +96,10 @@
 
                 const elapsed = (Date.now() - startTime) / 1000;
 
-                if (data.barcode && !found) {
+                if (!found && data.barcode !== null) {
                     found = true;
                     clearInterval(interval);
+
                     setTimeout(() => {
                         scanStatus.textContent = "Scan complete";
                         let html = `<h2>Scan Results</h2>
@@ -112,7 +113,7 @@
                             }
                             html += `</ul>`;
                         } else {
-                            html += `<p>No information found for this barcode</p>`;
+                            html += `<p style="color: red;"><strong>This barcode is not found in the database.</strong></p>`;
                         }
 
                         html += `</div>`;
@@ -123,7 +124,7 @@
 
                         resultsContainer.innerHTML = html;
                         scanButton.disabled = false;
-                    }, 2000); // 2s delay before showing results
+                    }, 2000);
                 }
 
                 if (!found && elapsed >= 10) {
@@ -132,7 +133,6 @@
                     resultsContainer.innerHTML = `<h2>Scan Results</h2><p>No barcode detected</p>`;
                     scanButton.disabled = false;
                 }
-
             }, 1000);
         });
     </script>
