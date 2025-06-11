@@ -5,8 +5,16 @@ import cv2
 from picamera2 import Picamera2
 from pyzbar import pyzbar
 import time
+from pymongo import MongoClient
+from datetime import datetime
 
 app = Flask(__name__)
+
+# MongoDB setup
+MONGO_URI = "mongodb+srv://idp:minliaunifarah@idp.xumuwhe.mongodb.net/?retryWrites=true&w=majority&appName=idp"
+client = MongoClient(MONGO_URI)
+db = client["barcodedb"]
+collection = db["scanned_barcodes"]
 
 # Constants
 METADATA_FILE = "barcode_metadata.csv"
@@ -58,13 +66,24 @@ def generate_frames():
                 else:
                     stable_count = 1
                     last_barcode = barcode_data
-
+                
                 if stable_count >= MAX_STABLE_FRAMES:
                     current_barcode = barcode_data
                     cv2.imwrite(SNAPSHOT_FILE, frame)
                     with open(BARCODE_FILE, "w") as f:
                         f.write(barcode_data)
                     scanning = False
+
+                    # Save to MongoDB
+                    collection.insert_one({
+                        "barcode": barcode_data,
+                        "timestamp": datetime.utcnow()
+                    })
+
+            # for debugging
+                    print("Detected barcode:", barcode_data)
+                    print("Successfully connected to MongoDB and inserted data!")
+
             else:
                 stable_count = 0
                 last_barcode = None
